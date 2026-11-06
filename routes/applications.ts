@@ -24,6 +24,21 @@ applicationsRouter.post("/", async (request, response) => {
         return;
     }
 
+    if (typeof company !== "string" || typeof position !== "string") {
+        response.status(400).json({ message: "company and position must be text" });
+        return;
+    }
+
+    if (typeof status !== "string") {
+        response.status(400).json({ message: "status must be text" });
+        return;
+    }
+
+    if (typeof note !== "string" && note !== undefined) {
+        response.status(400).json({ message: "note must be text" });
+        return;
+    }
+
     const newApplication = await prisma.application.create({
         data: { company, position, status, note, userId: request.userId },
     });
