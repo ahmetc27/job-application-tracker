@@ -4,7 +4,21 @@ import { prisma } from "../lib/prisma.ts";
 export const applicationsRouter = express.Router();
 
 applicationsRouter.get("/", async (request, response) => {
-    response.json({ userId: request.userId });
+    // 1. wenn request.userId fehlt: 401 und return - dieselben vier Zeilen wie in POST
+    if (!request.userId) {
+        response.status(401).json({ message: "not logged in" });
+        return;
+    }
+    // 2. Bewerbungen holen:
+    //    await prisma.application.findMany({ where: { userId: request.userId } })
+    //    und in eine Variable applications speichern
+    const applications = await prisma.application.findMany({
+        where: {
+            userId: request.userId
+        }
+    })
+    // 3. mit response.json(applications) antworten
+    response.json(applications);
 });
 
 applicationsRouter.post("/", async (request, response) => {
