@@ -15,7 +15,12 @@ export const requireAuth = (request: Request, response: Response, next: NextFunc
     const token = list[1];
     // 4. try: jwt.verify(token, jwtSecret), danach next()
     try {
-        jwt.verify(token, jwtSecret);
+        const payload = jwt.verify(token, jwtSecret);
+        if (typeof payload === "string" || typeof payload.userId !== "number") {
+            response.status(401).json({ message: "invalid token" });
+            return;
+        }
+        request.userId = payload.userId;
         next();
     }
     // 5. catch: 401 mit { message: "invalid token" }
