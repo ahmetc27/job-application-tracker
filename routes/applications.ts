@@ -82,3 +82,56 @@ applicationsRouter.get("/:id", async (request, response) => {
 
     response.json(application);
 });
+
+applicationsRouter.patch("/:id", async (request, response) => {
+    if (!request.userId) {
+        response.status(401).json({ message: "not logged in" });
+        return;
+    }
+    const id = Number(request.params.id);
+    if (Number.isNaN(id)) {
+        response.status(400).json({ message: "invalid id" });
+        return;
+    }
+    const application = await prisma.application.findUnique({
+        where: {
+            id: id
+        }
+    })
+
+    if (application === null || request.userId !== application.userId) {
+        response.status(404).json({ message: "application not found" });
+        return;
+    }
+
+    const company = request.body.company;
+    const position = request.body.position;
+    const status = request.body.status;
+    const note = request.body.note;
+
+    if (typeof company !== "string" && company !== undefined) {
+        response.status(400).json({ message: "company must be text" });
+        return;
+    }
+
+    if (typeof position !== "string" && position !== undefined) {
+        response.status(400).json({ message: "position must be text" });
+        return;
+    }
+
+    if (typeof status !== "string" && status !== undefined) {
+        response.status(400).json({ message: "status must be text" });
+        return;
+    }
+
+    if (typeof note !== "string" && note !== undefined) {
+        response.status(400).json({ message: "note must be text" });
+        return;
+    }
+
+    const result = await prisma.application.update({
+        where: { id: id },
+        data: { company, position, status, note },
+    });
+    response.json(result);
+});
