@@ -111,4 +111,4 @@ for (const testCase of cases) {
     }
 }
 
-console.log(`${passed} von ${cases.length} bestanden`);
+console.log(`${passed} of ${cases.length} checks passed`);
