@@ -1,18 +1,20 @@
 import "dotenv/config";
 
-const register1Response = await fetch("http://localhost:3000/auth/register", {
+const BASE_URL = process.env.BASE_URL;
+
+const register1Response = await fetch(`${BASE_URL}/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ "email": process.env.TEST_EMAIL, "password": process.env.TEST_PASSWORD }),
 });
 
-const register2Response = await fetch("http://localhost:3000/auth/register", {
+const register2Response = await fetch(`${BASE_URL}/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ "email": process.env.TEST2_EMAIL, "password": process.env.TEST2_PASSWORD }),
 });
 
-const login1Response = await fetch("http://localhost:3000/auth/login", {
+const login1Response = await fetch(`${BASE_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ "email": process.env.TEST_EMAIL, "password": process.env.TEST_PASSWORD }),
@@ -20,7 +22,7 @@ const login1Response = await fetch("http://localhost:3000/auth/login", {
 const login1Data = await login1Response.json();
 const token1 = login1Data.token;
 
-const login2Response = await fetch("http://localhost:3000/auth/login", {
+const login2Response = await fetch(`${BASE_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ "email": process.env.TEST2_EMAIL, "password": process.env.TEST2_PASSWORD }),
@@ -28,7 +30,7 @@ const login2Response = await fetch("http://localhost:3000/auth/login", {
 const login2Data = await login2Response.json();
 const token2 = login2Data.token;
 
-const applicationsResponse = await fetch("http://localhost:3000/applications", {
+const applicationsResponse = await fetch(`${BASE_URL}/applications`, {
     method: "POST",
     headers: {
         "Content-Type": "application/json",
@@ -97,7 +99,7 @@ for (const testCase of cases) {
         headers.Authorization = `Bearer ${testCase.token}`;
     }
 
-    const response = await fetch(`http://localhost:3000${testCase.path}`, {
+    const response = await fetch(`${BASE_URL}${testCase.path}`, {
         method: testCase.method,
         headers: headers,
         body: testCase.body ? JSON.stringify(testCase.body) : undefined,
