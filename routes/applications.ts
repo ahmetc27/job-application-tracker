@@ -135,3 +135,31 @@ applicationsRouter.patch("/:id", async (request, response) => {
     });
     response.json(result);
 });
+
+applicationsRouter.delete("/:id", async (request, response) => {
+    if (!request.userId) {
+        response.status(401).json({ message: "not logged in" });
+        return;
+    }
+    const id = Number(request.params.id);
+    if (Number.isNaN(id)) {
+        response.status(400).json({ message: "invalid id" });
+        return;
+    }
+    const application = await prisma.application.findUnique({
+        where: {
+            id: id
+        }
+    })
+
+    if (application === null || request.userId !== application.userId) {
+        response.status(404).json({ message: "application not found" });
+        return;
+    }
+
+    await prisma.application.delete({
+        where: { id: id }
+    });
+    
+    response.status(204).send();
+});
