@@ -39,7 +39,7 @@ const applicationsResponse = await fetch("http://localhost:3000/applications", {
 const application1Data = await applicationsResponse.json();
 const id = application1Data.id;
 
-console.log(`Token 1: ${token1}, Token 2: ${token2}, id: ${id}`);
+console.log(`Vorbereitung fertig, Test-Bewerbung hat id ${id}`);
 
 const cases = [
     { name: "Login richtig", method: "POST", path: "/auth/login", token: undefined,
@@ -87,3 +87,28 @@ const cases = [
       body: undefined, expected: 204
     },
 ];
+
+let passed = 0;
+
+for (const testCase of cases) {
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+
+    if (testCase.token) {
+        headers.Authorization = `Bearer ${testCase.token}`;
+    }
+
+    const response = await fetch(`http://localhost:3000${testCase.path}`, {
+        method: testCase.method,
+        headers: headers,
+        body: testCase.body ? JSON.stringify(testCase.body) : undefined,
+    });
+    
+    if (response.status === testCase.expected) {
+        passed = passed + 1;
+        console.log(`Passed: ${testCase.name}`);
+    } else {
+        console.log(`Failed: ${testCase.name}, expected: ${testCase.expected}, actual: ${response.status}`);
+    }
+}
+
+console.log(`${passed} von ${cases.length} bestanden`);
